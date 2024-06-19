@@ -2,7 +2,10 @@ package infra
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"gomini/domain"
 	"log"
 	"os"
 
@@ -30,7 +33,7 @@ func NewGemini(ctx context.Context) (*Gemini, error) {
 	}, nil
 }
 
-func (g *Gemini) GenerateText(ctx context.Context, prompt string) (string, error) {
+func (g *Gemini) Ask(ctx context.Context, topic domain.Topic, prompt string) (*domain.Answer, error) {
 	model := g.client.GenerativeModel(GENERATIVE_MODEL)
 	model.ResponseMIMEType = "application/json"
 	model.ResponseSchema = &genai.Schema{
@@ -38,30 +41,36 @@ func (g *Gemini) GenerateText(ctx context.Context, prompt string) (string, error
 		Properties: map[string]*genai.Schema{
 			"answer": {
 				Type: genai.TypeString,
-				Enum: []string{"yes", "no", "neither", "unrelated"},
+				Enum: []string{"yes", "no", "neither"},
 			},
 		},
 	}
 	p := []genai.Part{
 		genai.Text(`
-			次のトピックに関して質問されるので,それにyes/no/neither/unrelatedのいずれかで答えてください。
+			"topic"と"question"があります。
+			"question"は"topic"に関する質問です。
+			"topic"に関する質問に対して、"yes"、"no"、"neither"のいずれかで回答してください。
 		`),
-		genai.Text(`
-			topic: お寿司
-			`),
+		genai.Text(fmt.Sprintf("topic: %s", topic)),
 		genai.Text(fmt.Sprintf("question: %s", prompt)),
 	}
 	res, err := model.GenerateContent(ctx, p...)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	for _, part := range res.Candidates[0].Content.Parts {
 		if txt, ok := part.(genai.Text); ok {
-			log.Println(txt)
+			var answer domain.Answer
+			err := json.Unmarshal([]byte(txt), &answer)
+			if err != nil {
+				log.Printf("failed to unmarshal: %v", txt)
+				return nil, err
+			}
+			return &answer, nil
 		}
 	}
-	return "", nil
+	return nil, errors.New("no answer")
 }
 
 func (g *Gemini) Close() {

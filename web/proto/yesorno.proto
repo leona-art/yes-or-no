@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package yesorno.v1;
 
-option go_package = "gomini/gen/yesorno/v1;yesornov1";
-
 message AskRequest {
   string question = 1;
 }
