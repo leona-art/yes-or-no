@@ -15,13 +15,15 @@ var (
 
 type Answer struct {
 	Answer string `json:"answer"`
+	Reason string `json:"reason"`
 }
 
-func NewAnswer(answer string) (*Answer, error) {
+func NewAnswer(answer, reason string) (*Answer, error) {
 	if answer != Yes && answer != No && answer != Neither && answer != Unrelated {
 		return nil, errInvalidateAnswer
 	}
 	return &Answer{
 		Answer: answer,
+		Reason: reason,
 	}, nil
 }

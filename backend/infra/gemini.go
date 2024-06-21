@@ -43,6 +43,9 @@ func (g *Gemini) Ask(ctx context.Context, topic domain.Topic, prompt string) (*d
 				Type: genai.TypeString,
 				Enum: []string{"yes", "no", "neither"},
 			},
+			"reason": {
+				Type: genai.TypeString,
+			},
 		},
 	}
 	p := []genai.Part{
@@ -50,6 +53,7 @@ func (g *Gemini) Ask(ctx context.Context, topic domain.Topic, prompt string) (*d
 			"topic"と"question"があります。
 			"question"は"topic"に関する質問です。
 			"topic"に関する質問に対して、"yes"、"no"、"neither"のいずれかで回答してください。
+			"reason"には回答の理由を記入してください。
 		`),
 		genai.Text(fmt.Sprintf("topic: %s", topic)),
 		genai.Text(fmt.Sprintf("question: %s", prompt)),
