@@ -52,20 +52,18 @@ func (g *Gemini) Ask(ctx context.Context, topic domain.Topic, prompt string) (*d
 		},
 	}
 	p := []genai.Part{
-		genai.Text(fmt.Sprintf(`
-		let topic="%s"
-
+		genai.Text(`
+		topicとquestionが与えられます。
 		ユーザーはtopicの内容を知りません。
 		ユーザーはtopicが何かを当てるためにtopicに関する質問"question"を投げかけます
 		それに対して以下の形式のjsonで返してください。
-		{
-			"answer":"question"に対する"answer"。"yes"、"no"、"neither"のいずれかのみ,
-			"reason":"answer"の理由,
-			"finish":"question"の答えが"topic"の内容と等しい場合はtrue,それ以外ならfalse
-		}
-		`, topic.Content)),
-		genai.Text(fmt.Sprintf("topic: %s", topic)),
-		genai.Text(fmt.Sprintf("question: %s", prompt)),
+		"answer":"question"に対する"answer"。"yes"、"no"、"neither"のいずれかのみ,
+		"reason":"answer"の理由を簡潔に記述してください,
+		"finish":"question"の答えが"topic"の内容と等しい場合はtrue,それ以外ならfalse
+
+		`),
+		genai.Text(fmt.Sprintf("let topic=\"%s\"", topic.Content)),
+		genai.Text(fmt.Sprintf("let question=\"%s\"", prompt)),
 	}
 	res, err := model.GenerateContent(ctx, p...)
 	if err != nil {
