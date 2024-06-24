@@ -21,13 +21,14 @@ type YesOrNoServer struct {
 
 // Ask implements yesornov1connect.YesOrNoServiceHandler.
 func (y *YesOrNoServer) Ask(ctx context.Context, req *connect.Request[yesornov1.AskRequest]) (*connect.Response[yesornov1.AskResponse], error) {
-	answer, err := y.AskService.Ask(ctx, "お寿司", req.Msg.Question)
+	answer, err := y.AskService.Ask(ctx, "イーロンマスク", req.Msg.Question)
 	if err != nil {
 		return nil, err
 	}
 	log.Printf("answer: %s", answer)
 	res := connect.NewResponse(&yesornov1.AskResponse{
-		Answer: answer,
+		Answer: answer.Answer,
+		Finish: answer.Finish,
 	})
 	return res, nil
 }
@@ -42,9 +43,6 @@ func main() {
 	defer ai.Close()
 
 	askService := usecase.NewAskService(ai)
-
-	// q := "それは楽しいですか？"
-	// gomini.Ask_(ctx, q)
 
 	server := &YesOrNoServer{
 		AskService: askService,

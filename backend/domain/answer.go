@@ -16,6 +16,7 @@ var (
 type Answer struct {
 	Answer string `json:"answer"`
 	Reason string `json:"reason"`
+	Finish bool   `json:"finish"`
 }
 
 func NewAnswer(answer, reason string) (*Answer, error) {

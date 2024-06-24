@@ -46,15 +46,24 @@ func (g *Gemini) Ask(ctx context.Context, topic domain.Topic, prompt string) (*d
 			"reason": {
 				Type: genai.TypeString,
 			},
+			"finish": {
+				Type: genai.TypeBoolean,
+			},
 		},
 	}
 	p := []genai.Part{
-		genai.Text(`
-			"topic"と"question"があります。
-			"question"は"topic"に関する質問です。
-			"topic"に関する質問に対して、"yes"、"no"、"neither"のいずれかで回答してください。
-			"reason"には回答の理由を記入してください。
-		`),
+		genai.Text(fmt.Sprintf(`
+		let topic="%s"
+
+		ユーザーはtopicの内容を知りません。
+		ユーザーはtopicが何かを当てるためにtopicに関する質問"question"を投げかけます
+		それに対して以下の形式のjsonで返してください。
+		{
+			"answer":"question"に対する"answer"。"yes"、"no"、"neither"のいずれかのみ,
+			"reason":"answer"の理由,
+			"finish":"question"の答えが"topic"の内容と等しい場合はtrue,それ以外ならfalse
+		}
+		`, topic.Content)),
 		genai.Text(fmt.Sprintf("topic: %s", topic)),
 		genai.Text(fmt.Sprintf("question: %s", prompt)),
 	}
