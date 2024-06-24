@@ -8,30 +8,40 @@ const askAction = action(askGrpc)
 export default function Home() {
   const [question, setQuestion] = createSignal("")
   const asking = useSubmission(askAction)
-  type AskRecord={
+  type AskRecord = {
     question: string
     answer: string
   }
   const [history, setHistory] = createSignal<AskRecord[]>([])
-  
+
   // const record=createMemo(()=>({
   //   question: question(),
   //   answer: asking.result ?? ""
   // }))
   createEffect<AskRecord[]>((prev) => {
-    if (asking.result) {
-      const record={
+    if (asking.result && asking.result.finish) {
+      const record = {
         question: question(),
-        answer: asking.result
+        answer: "正解です！"
       } satisfies AskRecord
-      setHistory([...prev,record].reverse())
+      setHistory([...prev, record].reverse())
       asking.clear()
       setQuestion("")
-      return [...prev,record]
-    }else{
+      return [...prev, record]
+    }
+    else if (asking.result) {
+      const record = {
+        question: question(),
+        answer: asking.result.answer
+      } satisfies AskRecord
+      setHistory([...prev, record].reverse())
+      asking.clear()
+      setQuestion("")
+      return [...prev, record]
+    } else {
       return prev
     }
-  },[] as AskRecord[])
+  }, [] as AskRecord[])
   return (
     <main>
       <Title>yes or no</Title>
@@ -41,14 +51,14 @@ export default function Home() {
         <button type="submit">Ask</button>
       </form>
 
-      {asking.pending&&<p>Asking...</p>}
-      {asking.result && <p>{asking.result}</p>}
-      
+      {asking.pending && <p>Asking...</p>}
+      {asking.result && <p>{asking.result.answer}</p>}
+
       <For each={history()}>
-        {({question, answer}) => (
-          <div style={{ 
-            "display":"flex"
-           }}>
+        {({ question, answer }) => (
+          <div style={{
+            "display": "flex"
+          }}>
             <p>{question}</p>
             <p>{answer}</p>
           </div>

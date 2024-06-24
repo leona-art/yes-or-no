@@ -52,6 +52,11 @@ export class AskResponse extends Message<AskResponse> {
    */
   answer = "";
 
+  /**
+   * @generated from field: bool finish = 2;
+   */
+  finish = false;
+
   constructor(data?: PartialMessage<AskResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -61,6 +66,7 @@ export class AskResponse extends Message<AskResponse> {
   static readonly typeName = "yesorno.v1.AskResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "answer", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "finish", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AskResponse {
