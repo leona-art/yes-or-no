@@ -14,7 +14,7 @@ FROM alpine:latest
 
 WORKDIR /app
 
-ENV GEMINI_API_KEY="AIzaSyCd-_m7LRvOVZMqBO_ZEr2v37LsbjyFZc0"
+ENV GEMINI_API_KEY="[キーを追加]"
 
 COPY --from=builder /app/main .
 

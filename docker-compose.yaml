@@ -11,7 +11,7 @@ services:
       - ./backend:/app
     command: go run cmd/server/main.go
     environment:
-      - GEMINI_API_KEY=AIzaSyCd-_m7LRvOVZMqBO_ZEr2v37LsbjyFZc0
+      - GEMINI_API_KEY=[キーを追加]
     networks:
       - backend-network
 
